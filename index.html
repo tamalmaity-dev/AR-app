@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+    <style>
+      body { margin: 0; overflow: hidden; }
+      #loading {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: black; color: white; display: flex;
+        align-items: center; justify-content: center; font-family: sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading">Loading AR...</div>
+
+    <a-scene 
+      embedded
+      arjs="trackingMethod: best; sourceType: webcam;"
+      vr-mode-ui="enabled: false"
+      renderer="logarithmicDepthBuffer: true;">
+      
+      <!-- Image target marker -->
+      <a-nft
+        type="nft"
+        url="markers/myMarker"
+        smooth="true"
+        smoothCount="10"
+        smoothTolerance="0.01"
+        smoothThreshold="5">
+
+        <!-- Video plane -->
+        <a-video
+          src="#promoVideo"
+          width="1"
+          height="0.6"
+          position="0 0 0"
+          rotation="-90 0 0"
+          autoplay
+          loop>
+        </a-video>
+
+      </a-nft>
+
+      <a-assets>
+        <video id="promoVideo" src="video.mp4" preload="auto" loop></video>
+      </a-assets>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+      document.querySelector('a-scene').addEventListener('loaded', () => {
+        document.getElementById('loading').style.display = 'none';
+      });
+    </script>
+  </body>
+</html>
