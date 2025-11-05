@@ -81,6 +81,20 @@
         font-family: sans-serif;
         z-index: 3;
       }
+
+      #status {
+        position: fixed;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #fff;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        z-index: 5;
+        display: none;
+      }
     </style>
   </head>
 
@@ -94,6 +108,7 @@
     </div>
 
     <div id="loading">Loading AR...</div>
+    <div id="status">📷 Searching for marker...</div>
 
     <a-scene
       embedded
@@ -112,11 +127,8 @@
         ></video>
       </a-assets>
 
-    <script>
-        document.addEventListener("markerFound", () => alert("Marker detected!"));
-    </script>
-
       <a-nft
+        id="birdMarker"
         type="nft"
         url="markers/bird"
         smooth="true"
@@ -140,10 +152,13 @@
       const overlay = document.getElementById("overlay");
       const startBtn = document.getElementById("startBtn");
       const video = document.getElementById("promoVideo");
+      const loading = document.getElementById("loading");
+      const status = document.getElementById("status");
+      const marker = document.getElementById("birdMarker");
 
       // Hide loading once AR scene is ready
       document.querySelector("a-scene").addEventListener("loaded", () => {
-        document.getElementById("loading").style.display = "none";
+        loading.style.display = "none";
       });
 
       startBtn.addEventListener("click", async () => {
@@ -151,16 +166,20 @@
           // Request permission — ensures camera starts correctly
           await navigator.mediaDevices.getUserMedia({ video: true });
 
-          // Hide intro screen
           overlay.classList.add("hidden");
+          status.style.display = "block";
+          status.textContent = "📷 Searching for marker...";
 
-          // When marker found, start video
-          document
-            .querySelector("a-scene")
-            .addEventListener("markerFound", () => video.play());
-          document
-            .querySelector("a-scene")
-            .addEventListener("markerLost", () => video.pause());
+          marker.addEventListener("markerFound", () => {
+            alert("✅ Marker detected!");
+            video.play();
+            status.textContent = "🎬 Marker found — playing video!";
+          });
+
+          marker.addEventListener("markerLost", () => {
+            video.pause();
+            status.textContent = "📷 Searching for marker...";
+          });
         } catch (err) {
           alert("Please allow camera permission for AR to work.");
         }
